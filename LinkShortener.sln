@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener", "LinkShortener\LinkShortener.csproj", "{ACE77BFC-A665-4A46-9037-B77D11A760C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.DAL", "LinkShortener.DAL\LinkShortener.DAL.csproj", "{4A52C9A0-45C0-4921-A7B8-37DF1487F093}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.BLL", "LinkShortener.BLL\LinkShortener.BLL.csproj", "{4569EC21-7032-44F4-88AD-CB60D5EE69E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Test", "LinkShortener.Test\LinkShortener.Test.csproj", "{6E5AA00C-DC5A-4F91-A954-86D7904CD359}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{ACE77BFC-A665-4A46-9037-B77D11A760C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE77BFC-A665-4A46-9037-B77D11A760C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE77BFC-A665-4A46-9037-B77D11A760C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A52C9A0-45C0-4921-A7B8-37DF1487F093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A52C9A0-45C0-4921-A7B8-37DF1487F093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A52C9A0-45C0-4921-A7B8-37DF1487F093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A52C9A0-45C0-4921-A7B8-37DF1487F093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4569EC21-7032-44F4-88AD-CB60D5EE69E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4569EC21-7032-44F4-88AD-CB60D5EE69E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4569EC21-7032-44F4-88AD-CB60D5EE69E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4569EC21-7032-44F4-88AD-CB60D5EE69E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E5AA00C-DC5A-4F91-A954-86D7904CD359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E5AA00C-DC5A-4F91-A954-86D7904CD359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E5AA00C-DC5A-4F91-A954-86D7904CD359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E5AA00C-DC5A-4F91-A954-86D7904CD359}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
