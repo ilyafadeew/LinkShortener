@@ -9,10 +9,13 @@ namespace LinkShortener.DAL
 {
     public class Mongo
     {
-        public void Connect()
+        public MongoClient Client;
+        public IMongoDatabase Database;
+
+        public Mongo()
         {
-            var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("myFirstDatabase");
+            Client = new MongoClient("mongodb://localhost:27017");
+            Database = Client.GetDatabase("myFirstDatabase");
         }
     }
 }

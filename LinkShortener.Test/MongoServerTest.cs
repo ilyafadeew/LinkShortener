@@ -11,9 +11,9 @@ public class UnitTest1
         Mongo context = new();
 
         //Act
-        context.Connect();
+        var result = context.Database;
 
         //Assert
-
+        //if no exception is thrown everything is fine
     }
 }
