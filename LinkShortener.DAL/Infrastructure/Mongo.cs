@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinkShortener.DAL
+namespace LinkShortener.DAL.Infrastructure
 {
     public class Mongo
     {

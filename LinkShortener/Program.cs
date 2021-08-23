@@ -1,8 +1,24 @@
-using Microsoft.OpenApi.Models;
+
+using LinkShortener.DAL.Interfaces;
+using LinkShortener.DAL.Infrastructure;
+using Microsoft.Extensions.Options;
+using System;
+using System.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+var Configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
 // Add services to the container.
+
+
+builder.Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
+
+builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
+    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
