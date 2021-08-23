@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using LinkShortener.DAL.Infrastructure;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
@@ -8,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace LinkShortener.DAL.Model
 {
-    public class LinkInfo
-    {
-        [BsonId]
-        public ObjectId Id { get; set; }
+    [BsonCollection("Links")]
+    public class LinkInfo : Document
+    {    
         [BsonElement("OriginalLink")]
         public string OriginalLink { get; set; }
         [BsonElement("ShortenedLink")]
