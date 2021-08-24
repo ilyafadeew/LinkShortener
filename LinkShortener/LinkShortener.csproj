@@ -14,9 +14,4 @@
     <ProjectReference Include="..\LinkShortener.BLL\LinkShortener.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
-
 </Project>
