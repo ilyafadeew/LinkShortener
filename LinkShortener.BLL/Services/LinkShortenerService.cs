@@ -30,11 +30,19 @@ namespace LinkShortener.BLL.Services
 
         public IEnumerable<string> GetAllShortenedLinks()
         {
-            var people = _linkInfoRepository.FilterBy(
-                filter => filter.OriginalLink != "google.com",
+            var shortenedLinks = _linkInfoRepository.FilterBy(
+                filter => filter.OriginalLink != "https://www.google.com/",
                 projection => projection.ShortenedLink
             );
-            return people;
+            return shortenedLinks;
+        }
+
+        public string GetOriginalLink(string shortenedLink)
+        {
+            var linkInfo = _linkInfoRepository
+                .FindOne(filter => filter.ShortenedLink == shortenedLink);
+
+            return linkInfo.OriginalLink;
         }
 
     }

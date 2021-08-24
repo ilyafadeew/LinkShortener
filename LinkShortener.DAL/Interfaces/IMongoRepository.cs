@@ -11,6 +11,7 @@ namespace LinkShortener.DAL.Interfaces
     {
         IQueryable<TDocument> AsQueryable();
 
+        #region Get
         IEnumerable<TDocument> FilterBy(
             Expression<Func<TDocument, bool>> filterExpression);
 
@@ -25,7 +26,9 @@ namespace LinkShortener.DAL.Interfaces
         TDocument FindById(string id);
 
         Task<TDocument> FindByIdAsync(string id);
+        #endregion
 
+        #region Insert
         void InsertOne(TDocument document);
 
         Task InsertOneAsync(TDocument document);
@@ -33,11 +36,15 @@ namespace LinkShortener.DAL.Interfaces
         void InsertMany(ICollection<TDocument> documents);
 
         Task InsertManyAsync(ICollection<TDocument> documents);
+        #endregion
 
+        #region Replace
         void ReplaceOne(TDocument document);
 
         Task ReplaceOneAsync(TDocument document);
+        #endregion
 
+        #region Delete
         void DeleteOne(Expression<Func<TDocument, bool>> filterExpression);
 
         Task DeleteOneAsync(Expression<Func<TDocument, bool>> filterExpression);
@@ -49,5 +56,6 @@ namespace LinkShortener.DAL.Interfaces
         void DeleteMany(Expression<Func<TDocument, bool>> filterExpression);
 
         Task DeleteManyAsync(Expression<Func<TDocument, bool>> filterExpression);
+        #endregion
     }
 }

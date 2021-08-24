@@ -27,5 +27,17 @@ public class LinkShortenerController : ControllerBase
         return _linkShortenerService.GetAllShortenedLinks();
     }
 
+    [HttpGet("/{shortenedLink}")]
+    public IActionResult RedirectToOriginalLink(string shortenedLink)
+    {
+        try
+        {
+            return Redirect(_linkShortenerService.GetOriginalLink(shortenedLink));
+        }
+        catch (System.NullReferenceException)
+        {
+            return BadRequest("No such link found");
+        }
+    }
 
 }

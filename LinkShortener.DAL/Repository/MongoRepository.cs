@@ -35,6 +35,7 @@ namespace LinkShortener.DAL.Repository
             return _collection.AsQueryable();
         }
 
+        #region Find
         public virtual IEnumerable<TDocument> FilterBy(
             Expression<Func<TDocument, bool>> filterExpression)
         {
@@ -75,7 +76,9 @@ namespace LinkShortener.DAL.Repository
             });
         }
 
+        #endregion
 
+        #region Insert
         public virtual void InsertOne(TDocument document)
         {
             _collection.InsertOne(document);
@@ -96,7 +99,9 @@ namespace LinkShortener.DAL.Repository
         {
             await _collection.InsertManyAsync(documents);
         }
+        #endregion
 
+        #region Replace
         public void ReplaceOne(TDocument document)
         {
             var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
@@ -108,7 +113,9 @@ namespace LinkShortener.DAL.Repository
             var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
             await _collection.FindOneAndReplaceAsync(filter, document);
         }
+        #endregion
 
+        #region Delete
         public void DeleteOne(Expression<Func<TDocument, bool>> filterExpression)
         {
             _collection.FindOneAndDelete(filterExpression);
@@ -145,5 +152,6 @@ namespace LinkShortener.DAL.Repository
         {
             return Task.Run(() => _collection.DeleteManyAsync(filterExpression));
         }
+        #endregion
     }
 }
