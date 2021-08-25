@@ -21,12 +21,12 @@ builder.Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSet
 builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
     serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
-builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoGenericRepository<>));
 #endregion
 
 #region BuisnesLogicServices
+builder.Services.AddScoped(typeof(RequestCounterRepository));
 builder.Services.AddScoped(typeof(LinkShortenerService));
-
 #endregion
 
 builder.Services.AddControllers();

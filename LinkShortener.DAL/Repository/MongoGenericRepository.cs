@@ -11,15 +11,21 @@ using System.Threading.Tasks;
 
 namespace LinkShortener.DAL.Repository
 {
-    public class MongoRepository<TDocument> : IMongoRepository<TDocument>
+    public class MongoGenericRepository<TDocument> : IMongoRepository<TDocument>
     where TDocument : IDocument
     {
-        private readonly IMongoCollection<TDocument> _collection;
+        protected IMongoCollection<TDocument> _collection;
+        protected IMongoDbSettings _settings;
 
-        public MongoRepository(IMongoDbSettings settings)
+        public MongoGenericRepository(IMongoDbSettings settings)
         {
-            var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
+            _settings = settings;
+            var database = new MongoClient(_settings.ConnectionString).GetDatabase(_settings.DatabaseName);
             _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
+        }
+
+        public MongoGenericRepository()
+        {
         }
 
         private protected string GetCollectionName(Type documentType)
