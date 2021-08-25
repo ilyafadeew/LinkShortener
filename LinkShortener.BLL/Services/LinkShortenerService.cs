@@ -1,6 +1,9 @@
-﻿using LinkShortener.DAL.Interfaces;
+﻿using AutoMapper;
+using LinkShortener.BLL.ViewModels;
+using LinkShortener.DAL.Interfaces;
 using LinkShortener.DAL.Model;
 using LinkShortener.DAL.Repository;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -13,12 +16,15 @@ namespace LinkShortener.BLL.Services
     public class LinkShortenerService
     {
         private readonly IMongoRepository<LinkInfo> _linkInfoRepository;
-        private readonly RequestCounterRepository _requestCounterRepository;
+        private readonly IHttpContextAccessor _httpContext;
+        private readonly IMapper _mapper;
 
-        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, RequestCounterRepository requestCounterRepository)
+        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, 
+            IMapper mapper, IHttpContextAccessor httpContext)
         {
             _linkInfoRepository = linkInfoRepository;
-            _requestCounterRepository = requestCounterRepository;
+            _httpContext = httpContext;
+            _mapper = mapper;
         }
 
         public async Task AddLinkInfoAsync(string originalLink, string shortenedLink)
@@ -26,52 +32,58 @@ namespace LinkShortener.BLL.Services
             var linkInfo = new LinkInfo()
             {
                 OriginalLink = originalLink,
-                ShortenedLink = shortenedLink
+                ShortenedLink = shortenedLink,
+                UserIdWhoAddThisLink = GetCurrentUserGUID()
             };
 
             await _linkInfoRepository.InsertOneAsync(linkInfo);
         }
 
-        public IEnumerable<string> GetAllShortenedLinks()
+        public IEnumerable<LinkInfoViewModel> GetMyShortenedLinks()
         {
-            var shortenedLinks = _linkInfoRepository.FilterBy(
-                filter => filter.OriginalLink != "https://www.google.com/",
-                projection => projection.ShortenedLink
+            var linkInfo = _linkInfoRepository.FilterBy(
+                filter => filter.UserIdWhoAddThisLink == GetCurrentUserGUID()
             );
-            return shortenedLinks;
+
+           return _mapper.Map<IEnumerable<LinkInfoViewModel>>(linkInfo);
+          
         }
 
-        public async Task<string> GetOriginalLinkAsync(string shortenedLink)
+        public async Task<string> GetOriginalLinkOrNullAsync(string shortenedLink)
         {
             var linkInfo = _linkInfoRepository
                 .FindOne(filter => filter.ShortenedLink == shortenedLink);
 
-            await IncreaseValueOfRequestCounter(linkInfo.Id);
-
-            return linkInfo.OriginalLink;
+            if (linkInfo != null)
+            {
+                await IncreaseValueOfRequestCounter(linkInfo);
+                return linkInfo.OriginalLink;
+            }
+            else
+                return null;
         }
 
+
+        private string GetCurrentUserGUID()
+        {
+            if (_httpContext.HttpContext.Request.Cookies.ContainsKey("myUserId"))
+            {
+                return _httpContext.HttpContext.Request.Cookies["myUserId"];
+            }
+            else
+            {
+                string newUserGUID = Guid.NewGuid().ToString();
+                _httpContext.HttpContext.Response.Cookies.Append("myUserID", newUserGUID);
+                return newUserGUID;
+            }
+        }
         /// <summary>
         /// Increases the value of how many times this request was made
         /// </summary>
-        private async Task IncreaseValueOfRequestCounter(ObjectId id)
+        private async Task IncreaseValueOfRequestCounter(LinkInfo linkInfo)
         {
-            RequestCounter currentCounter = _requestCounterRepository.GetMaxCountValue(id);
-
-            if (currentCounter == null)
-            {
-                currentCounter = new RequestCounter()
-                {
-                    LinkInfoId = id,
-                    Count = 1
-                };
-                await _requestCounterRepository.InsertOneAsync(currentCounter);
-                return;
-            }
-
-            currentCounter.Count++;
-
-            await _requestCounterRepository.ReplaceOneAsync(currentCounter);
+            linkInfo.NumberOfLinkRequests++;
+            _linkInfoRepository.ReplaceOne(linkInfo);
         }
 
     }

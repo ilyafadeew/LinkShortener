@@ -1,7 +1,9 @@
 ﻿using LinkShortener.BLL.Services;
+using LinkShortener.BLL.ViewModels;
 using LinkShortener.DAL.Interfaces;
 using LinkShortener.DAL.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace LinkShortener.Controllers;
 [Route("api/[controller]")]
@@ -17,27 +19,26 @@ public class LinkShortenerController : ControllerBase
 
     [HttpPost("addLink")]
     public async Task AddLinkInfoAsync(string originalLink, string shortenedLink)
-    {
+    {      
         await _linkShortenerService.AddLinkInfoAsync(originalLink, shortenedLink);
     }
 
-    [HttpGet("getAllShortenedLinks")]
-    public IEnumerable<string> GetAllShortenedLinks()
+
+    [HttpGet("getMyShortenedLinks")]
+    public IEnumerable<LinkInfoViewModel> GetMyShortenedLinks()
     {
-        return _linkShortenerService.GetAllShortenedLinks();
+        return _linkShortenerService.GetMyShortenedLinks();
     }
 
     [HttpGet("/{shortenedLink}")]
     public async Task<IActionResult> RedirectToOriginalLink(string shortenedLink)
     {
-        try
-        {
-            return Redirect(await _linkShortenerService.GetOriginalLinkAsync(shortenedLink));
-        }
-        catch (System.NullReferenceException)
-        {
+        string redirectionLink = await _linkShortenerService.GetOriginalLinkOrNullAsync(shortenedLink);
+
+        if (redirectionLink != null)
+            return Redirect(redirectionLink);
+        else
             return BadRequest("No such link found");
-        }
     }
 
 }
