@@ -16,6 +16,8 @@ var Configuration = new ConfigurationBuilder()
 // Add services to the container.
 
 #region InfrustructionServices
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
 
 builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
@@ -25,7 +27,7 @@ builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoGenericReposi
 #endregion
 
 #region BuisnesLogicServices
-builder.Services.AddScoped(typeof(RequestCounterRepository));
+builder.Services.AddScoped(typeof(IRequestCounterRepository), typeof(RequestCounterRepository));
 builder.Services.AddScoped(typeof(LinkShortenerService));
 #endregion
 
@@ -52,3 +54,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

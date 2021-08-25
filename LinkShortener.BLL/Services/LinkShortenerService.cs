@@ -1,6 +1,7 @@
 ﻿using LinkShortener.DAL.Interfaces;
 using LinkShortener.DAL.Model;
 using LinkShortener.DAL.Repository;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,14 @@ namespace LinkShortener.BLL.Services
     {
         private readonly IMongoRepository<LinkInfo> _linkInfoRepository;
         private readonly IRequestCounterRepository _requestCounterRepository;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, IRequestCounterRepository requestCounterRepository)
+        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, 
+            IRequestCounterRepository requestCounterRepository, IHttpContextAccessor httpContext)
         {
             _linkInfoRepository = linkInfoRepository;
             _requestCounterRepository = requestCounterRepository;
+            _httpContext = httpContext;
         }
 
         public async Task AddLinkInfoAsync(string originalLink, string shortenedLink)
@@ -26,10 +30,25 @@ namespace LinkShortener.BLL.Services
             var linkInfo = new LinkInfo()
             {
                 OriginalLink = originalLink,
-                ShortenedLink = shortenedLink
+                ShortenedLink = shortenedLink,
+                UserIdWhoAddThisLink = GetUserGUID()
             };
 
             await _linkInfoRepository.InsertOneAsync(linkInfo);
+        }
+
+        private string GetUserGUID()
+        {
+            if (_httpContext.HttpContext.Request.Cookies.ContainsKey("myUserId"))
+            {
+                return _httpContext.HttpContext.Request.Cookies["myUserId"];
+            }
+            else
+            {
+                string newUserGUID = Guid.NewGuid().ToString();
+                _httpContext.HttpContext.Response.Cookies.Append("myUserID", newUserGUID);
+                return newUserGUID;
+            }
         }
 
         public IEnumerable<string> GetAllShortenedLinks()
@@ -56,6 +75,8 @@ namespace LinkShortener.BLL.Services
                 return linkInfo.OriginalLink;
             }
         }
+
+
 
         /// <summary>
         /// Increases the value of how many times this request was made
