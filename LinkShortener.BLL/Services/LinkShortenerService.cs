@@ -1,4 +1,6 @@
-﻿using LinkShortener.DAL.Interfaces;
+﻿using AutoMapper;
+using LinkShortener.BLL.ViewModels;
+using LinkShortener.DAL.Interfaces;
 using LinkShortener.DAL.Model;
 using LinkShortener.DAL.Repository;
 using Microsoft.AspNetCore.Http;
@@ -14,15 +16,15 @@ namespace LinkShortener.BLL.Services
     public class LinkShortenerService
     {
         private readonly IMongoRepository<LinkInfo> _linkInfoRepository;
-        private readonly IRequestCounterRepository _requestCounterRepository;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly IMapper _mapper;
 
         public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, 
-            IRequestCounterRepository requestCounterRepository, IHttpContextAccessor httpContext)
+            IMapper mapper, IHttpContextAccessor httpContext)
         {
             _linkInfoRepository = linkInfoRepository;
-            _requestCounterRepository = requestCounterRepository;
             _httpContext = httpContext;
+            _mapper = mapper;
         }
 
         public async Task AddLinkInfoAsync(string originalLink, string shortenedLink)
@@ -37,13 +39,14 @@ namespace LinkShortener.BLL.Services
             await _linkInfoRepository.InsertOneAsync(linkInfo);
         }
 
-        public IEnumerable<string> GetMyShortenedLinks()
+        public IEnumerable<LinkInfoViewModel> GetMyShortenedLinks()
         {
-            var shortenedLinks = _linkInfoRepository.FilterBy(
-                filter => filter.UserIdWhoAddThisLink == GetCurrentUserGUID(),
-                projection => projection.ShortenedLink
+            var linkInfo = _linkInfoRepository.FilterBy(
+                filter => filter.UserIdWhoAddThisLink == GetCurrentUserGUID()
             );
-            return shortenedLinks;
+
+           return _mapper.Map<IEnumerable<LinkInfoViewModel>>(linkInfo);
+          
         }
 
         public async Task<string> GetOriginalLinkOrNullAsync(string shortenedLink)
@@ -51,15 +54,13 @@ namespace LinkShortener.BLL.Services
             var linkInfo = _linkInfoRepository
                 .FindOne(filter => filter.ShortenedLink == shortenedLink);
 
-            if (linkInfo == null)
+            if (linkInfo != null)
             {
-                return null;
-            }
-            else
-            {
-                await IncreaseValueOfRequestCounter(linkInfo.Id);
+                await IncreaseValueOfRequestCounter(linkInfo);
                 return linkInfo.OriginalLink;
             }
+            else
+                return null;
         }
 
 
@@ -79,24 +80,10 @@ namespace LinkShortener.BLL.Services
         /// <summary>
         /// Increases the value of how many times this request was made
         /// </summary>
-        private async Task IncreaseValueOfRequestCounter(ObjectId id)
+        private async Task IncreaseValueOfRequestCounter(LinkInfo linkInfo)
         {
-            RequestCounter currentCounter = _requestCounterRepository.GetMaxCountValue(id);
-
-            if (currentCounter == null)
-            {
-                currentCounter = new RequestCounter()
-                {
-                    LinkInfoId = id,
-                    Count = 1
-                };
-                await _requestCounterRepository.InsertOneAsync(currentCounter);
-                return;
-            }
-
-            currentCounter.Count++;
-
-            await _requestCounterRepository.ReplaceOneAsync(currentCounter);
+            linkInfo.NumberOfLinkRequests++;
+            _linkInfoRepository.ReplaceOne(linkInfo);
         }
 
     }

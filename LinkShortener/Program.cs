@@ -6,6 +6,7 @@ using System;
 using System.Configuration;
 using LinkShortener.DAL.Repository;
 using LinkShortener.BLL.Services;
+using LinkShortener.BLL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,17 +18,14 @@ var Configuration = new ConfigurationBuilder()
 
 #region InfrustructionServices
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<DefaultMappingProfile>());
 builder.Services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
-
 builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
     serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
-
 builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoGenericRepository<>));
 #endregion
 
 #region BuisnesLogicServices
-builder.Services.AddScoped(typeof(IRequestCounterRepository), typeof(RequestCounterRepository));
 builder.Services.AddScoped(typeof(LinkShortenerService));
 #endregion
 

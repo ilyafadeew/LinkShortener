@@ -1,4 +1,5 @@
 ﻿using LinkShortener.BLL.Services;
+using LinkShortener.BLL.ViewModels;
 using LinkShortener.DAL.Interfaces;
 using LinkShortener.DAL.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class LinkShortenerController : ControllerBase
 
 
     [HttpGet("getMyShortenedLinks")]
-    public IEnumerable<string> GetMyShortenedLinks()
+    public IEnumerable<LinkInfoViewModel> GetMyShortenedLinks()
     {
         return _linkShortenerService.GetMyShortenedLinks();
     }
