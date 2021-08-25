@@ -31,30 +31,16 @@ namespace LinkShortener.BLL.Services
             {
                 OriginalLink = originalLink,
                 ShortenedLink = shortenedLink,
-                UserIdWhoAddThisLink = GetUserGUID()
+                UserIdWhoAddThisLink = GetCurrentUserGUID()
             };
 
             await _linkInfoRepository.InsertOneAsync(linkInfo);
         }
 
-        private string GetUserGUID()
-        {
-            if (_httpContext.HttpContext.Request.Cookies.ContainsKey("myUserId"))
-            {
-                return _httpContext.HttpContext.Request.Cookies["myUserId"];
-            }
-            else
-            {
-                string newUserGUID = Guid.NewGuid().ToString();
-                _httpContext.HttpContext.Response.Cookies.Append("myUserID", newUserGUID);
-                return newUserGUID;
-            }
-        }
-
-        public IEnumerable<string> GetAllShortenedLinks()
+        public IEnumerable<string> GetMyShortenedLinks()
         {
             var shortenedLinks = _linkInfoRepository.FilterBy(
-                filter => filter.OriginalLink != "https://www.google.com/",
+                filter => filter.UserIdWhoAddThisLink == GetCurrentUserGUID(),
                 projection => projection.ShortenedLink
             );
             return shortenedLinks;
@@ -77,7 +63,19 @@ namespace LinkShortener.BLL.Services
         }
 
 
-
+        private string GetCurrentUserGUID()
+        {
+            if (_httpContext.HttpContext.Request.Cookies.ContainsKey("myUserId"))
+            {
+                return _httpContext.HttpContext.Request.Cookies["myUserId"];
+            }
+            else
+            {
+                string newUserGUID = Guid.NewGuid().ToString();
+                _httpContext.HttpContext.Response.Cookies.Append("myUserID", newUserGUID);
+                return newUserGUID;
+            }
+        }
         /// <summary>
         /// Increases the value of how many times this request was made
         /// </summary>

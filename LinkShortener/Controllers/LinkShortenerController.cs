@@ -22,10 +22,11 @@ public class LinkShortenerController : ControllerBase
         await _linkShortenerService.AddLinkInfoAsync(originalLink, shortenedLink);
     }
 
-    [HttpGet("getAllShortenedLinks")]
-    public IEnumerable<string> GetAllShortenedLinks()
+
+    [HttpGet("getMyShortenedLinks")]
+    public IEnumerable<string> GetMyShortenedLinks()
     {
-        return _linkShortenerService.GetAllShortenedLinks();
+        return _linkShortenerService.GetMyShortenedLinks();
     }
 
     [HttpGet("/{shortenedLink}")]
