@@ -30,14 +30,12 @@ public class LinkShortenerController : ControllerBase
     [HttpGet("/{shortenedLink}")]
     public async Task<IActionResult> RedirectToOriginalLink(string shortenedLink)
     {
-        try
-        {
-            return Redirect(await _linkShortenerService.GetOriginalLinkAsync(shortenedLink));
-        }
-        catch (System.NullReferenceException)
-        {
+        string redirectionLink = await _linkShortenerService.GetOriginalLinkOrNullAsync(shortenedLink);
+
+        if (redirectionLink != null)
+            return Redirect(redirectionLink);
+        else
             return BadRequest("No such link found");
-        }
     }
 
 }

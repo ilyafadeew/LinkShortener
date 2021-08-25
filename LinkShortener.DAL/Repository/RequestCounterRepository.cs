@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LinkShortener.DAL.Repository
 {
-    public class RequestCounterRepository : MongoGenericRepository<RequestCounter>
+    public class RequestCounterRepository : MongoGenericRepository<RequestCounter>, IRequestCounterRepository
     {
         public RequestCounterRepository(IMongoDbSettings settings)
         {

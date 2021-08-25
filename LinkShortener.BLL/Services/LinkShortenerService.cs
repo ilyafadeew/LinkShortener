@@ -13,9 +13,9 @@ namespace LinkShortener.BLL.Services
     public class LinkShortenerService
     {
         private readonly IMongoRepository<LinkInfo> _linkInfoRepository;
-        private readonly RequestCounterRepository _requestCounterRepository;
+        private readonly IRequestCounterRepository _requestCounterRepository;
 
-        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, RequestCounterRepository requestCounterRepository)
+        public LinkShortenerService(IMongoRepository<LinkInfo> linkInfoRepository, IRequestCounterRepository requestCounterRepository)
         {
             _linkInfoRepository = linkInfoRepository;
             _requestCounterRepository = requestCounterRepository;
@@ -41,14 +41,20 @@ namespace LinkShortener.BLL.Services
             return shortenedLinks;
         }
 
-        public async Task<string> GetOriginalLinkAsync(string shortenedLink)
+        public async Task<string> GetOriginalLinkOrNullAsync(string shortenedLink)
         {
             var linkInfo = _linkInfoRepository
                 .FindOne(filter => filter.ShortenedLink == shortenedLink);
 
-            await IncreaseValueOfRequestCounter(linkInfo.Id);
-
-            return linkInfo.OriginalLink;
+            if (linkInfo == null)
+            {
+                return null;
+            }
+            else
+            {
+                await IncreaseValueOfRequestCounter(linkInfo.Id);
+                return linkInfo.OriginalLink;
+            }
         }
 
         /// <summary>
