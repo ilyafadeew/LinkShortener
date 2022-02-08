@@ -1,15 +1,15 @@
 # LinkShortener
-#### Как запустить ?
-- В проекте LinkShortener.API изменить в appsettings.json файле, строки подключения к бд и имя бд.
+#### How to run ?
+- In project LinkShortener.API replace the connection string in appsettings.json.
 
-## Техническое задание
-#### Нужно сделать REST API сервиса по сокращению ссылок (аналог bit.ly), со следующими возможностями:
-- Cоздание сокращенной ссылки по полной
-- Получение оригинала по сокращенной, с увеличением счетчика посещений 
-- Получение списка всех сокращенных ссылок с количеством переходов
+## Technical tasks
+#### Create REST API service for shortening links (for example, "bit.ly"), with the following capabilities :
+- Creation of a short link by the original one.
+- Getting the original by short one, with increasing views counter.  
+- Getting a list of all shortened links with the number of visits.
 
-#### Технологии: 
+#### Technologies: 
 ASP.NET Web Api, MongoDB
-#### Опциональные усложнения:
-- Запоминать пользователя без регистрации - показывать ему только сокращенные им ссылки.
-- При заходе этого же пользователя в режиме инкогнито, сокращенные им ранее ссылки он не должен видеть
+#### Additional tasks:
+- Remember user without registration - show him only his list of links.
+- When auser logged in incognito, they cannot see links from the previous session.
